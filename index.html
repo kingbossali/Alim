@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALIM Systems — Engineered in Germany. Built for the World.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#06060b;--deep:#09090f;--surface:#0e0e18;--lift:#141420;
+  --edge:rgba(255,255,255,0.055);--edge2:rgba(255,255,255,0.10);
+  --blue:#2563eb;--bluh:#3b82f6;--blup:#60a5fa;
+  --fog:#9daabf;--ash:#6b7a8f;--smoke:#3e4659;
+  --chalk:#dde4f0;--white:#eef1f8;
+  --mono:"DM Mono",monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--void);color:var(--white);font-family:"Inter",sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+/* SCENE ENGINE */
+.scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.s-base{position:absolute;inset:0;}
+.s-shaft{position:absolute;height:160%;top:-30%;transform:skewX(-12deg);filter:blur(42px);}
+.s-bloom{position:absolute;border-radius:50%;filter:blur(62px);}
+.s-grid{position:absolute;inset:0;
+  background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.018) 0,rgba(255,255,255,0.018) 1px,transparent 1px,transparent 72px),
+  repeating-linear-gradient(0deg,rgba(255,255,255,0.013) 0,rgba(255,255,255,0.013) 1px,transparent 1px,transparent 72px);}
+.s-dots{position:absolute;inset:0;
+  background-image:radial-gradient(1.5px 1.5px at 12% 22%,rgba(96,165,250,.5),transparent),
+  radial-gradient(1.5px 1.5px at 38% 65%,rgba(96,165,250,.35),transparent),
+  radial-gradient(2px 2px at 67% 18%,rgba(96,165,250,.45),transparent),
+  radial-gradient(1.5px 1.5px at 82% 72%,rgba(96,165,250,.3),transparent),
+  radial-gradient(1.5px 1.5px at 51% 88%,rgba(96,165,250,.38),transparent),
+  radial-gradient(2px 2px at 25% 55%,rgba(96,165,250,.28),transparent),
+  radial-gradient(1.5px 1.5px at 90% 40%,rgba(96,165,250,.42),transparent);}
+.s-floor{position:absolute;bottom:0;left:0;right:0;height:45%;}
+.ov-grade{position:absolute;inset:0;z-index:3;}
+.ov-vign{position:absolute;inset:0;z-index:4;background:radial-gradient(ellipse 80% 74% at 50% 46%,transparent 22%,rgba(6,6,11,.55) 100%);}
+.ov-bot{position:absolute;bottom:0;left:0;right:0;z-index:5;}
+.ov-left{position:absolute;top:0;bottom:0;left:0;z-index:5;}
+.cinematic{position:relative;overflow:hidden;}
+.cin-grain{position:absolute;inset:0;z-index:10;opacity:.028;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;mix-blend-mode:screen;}
+@keyframes bloomP{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:0 52px;height:66px;background:rgba(6,6,11,.9);backdrop-filter:blur(28px) saturate(160%);border-bottom:1px solid var(--edge);}
+.nav-logo{display:flex;align-items:center;gap:11px;cursor:pointer;}
+.nav-logo svg{width:32px;height:32px;flex-shrink:0;}
+.nav-brand{display:flex;flex-direction:column;gap:1px;}
+.nav-alim{font-size:15px;font-weight:900;letter-spacing:.16em;color:var(--white);line-height:1;}
+.nav-sys{font-family:var(--mono);font-size:6.5px;letter-spacing:.44em;color:var(--smoke);margin-top:2px;}
+.nav-links{display:flex;align-items:center;gap:2px;list-style:none;}
+.nav-links a{display:block;padding:7px 15px;font-size:11px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--ash);border-radius:4px;transition:color .2s,background .2s;cursor:pointer;}
+.nav-links a:hover,.nav-links a.act{color:var(--white);background:rgba(255,255,255,.055);}
+.nav-cta{background:var(--blue)!important;color:var(--white)!important;font-weight:700!important;border-radius:3px!important;display:flex!important;align-items:center;gap:7px;padding:8px 20px!important;transition:background .2s!important;}
+.nav-cta:hover{background:var(--bluh)!important;}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--blup);display:inline-block;animation:ndot 2s infinite;}
+@keyframes ndot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(96,165,250,.5)}50%{opacity:.4;box-shadow:0 0 0 5px rgba(96,165,250,0)}}
+.nav-ham{display:none;flex-direction:column;gap:5px;padding:8px;cursor:pointer;background:none;border:none;}
+.nav-ham span{width:22px;height:1.5px;background:var(--white);border-radius:2px;display:block;transition:.3s;}
+.mob-drawer{display:none;position:fixed;inset:66px 0 0;z-index:850;background:rgba(6,6,11,.97);backdrop-filter:blur(28px);flex-direction:column;padding:32px 24px;gap:0;border-top:1px solid var(--edge);}
+.mob-drawer.open{display:flex;}
+.mob-drawer a{display:block;padding:18px 0;font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);border-bottom:1px solid var(--edge);transition:color .2s;cursor:pointer;}
+.mob-drawer a:hover,.mob-drawer a.act{color:var(--white);}
+.mob-cta{margin-top:24px;background:var(--blue);color:var(--white)!important;text-align:center;border-radius:3px;border:none!important;}
+
+/* PAGE SYSTEM */
+.page{display:none;}.page.act{display:block;}
+
+/* TYPOGRAPHY */
+.dxl{font-size:clamp(58px,9vw,120px);font-weight:900;line-height:.89;letter-spacing:-.04em;}
+.dlg{font-size:clamp(42px,6.5vw,84px);font-weight:900;line-height:.93;letter-spacing:-.034em;}
+.dmd{font-size:clamp(30px,4vw,52px);font-weight:900;line-height:1.02;letter-spacing:-.026em;}
+.dsm{font-size:clamp(22px,3vw,36px);font-weight:800;line-height:1.08;letter-spacing:-.02em;}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:18px;font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--blup);text-transform:uppercase;}
+.eyebrow::before{content:"";width:16px;height:1px;background:var(--blup);flex-shrink:0;}
+.body-lg{font-size:16px;line-height:1.84;font-weight:300;color:var(--ash);}
+.body-md{font-size:14px;line-height:1.87;font-weight:300;color:var(--ash);}
+.label{font-family:var(--mono);font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--smoke);}
+.blue{color:var(--bluh);}
+.dim{color:rgba(238,241,248,.10);}
+.dot-blue{color:var(--bluh);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:10px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:3px;padding:14px 32px;border:none;font-family:"Inter",sans-serif;cursor:pointer;transition:all .22s;}
+.btn-solid{background:var(--blue);color:#fff;}
+.btn-solid:hover{background:var(--bluh);transform:translateY(-2px);gap:14px;}
+.btn-ghost{background:transparent;color:var(--fog);border:1px solid var(--edge2);}
+.btn-ghost:hover{border-color:rgba(255,255,255,.28);color:#fff;transform:translateY(-1px);}
+.btn-link{background:none;border:none;color:var(--ash);font-size:11.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;padding:0;gap:8px;display:inline-flex;align-items:center;border-bottom:1px solid var(--edge2);padding-bottom:2px;cursor:pointer;font-family:"Inter",sans-serif;transition:color .2s,border-color .2s,gap .2s;}
+.btn-link:hover{color:#fff;border-color:var(--ash);gap:12px;}
+
+/* HERO */
+#hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;}
+.hero-content{position:relative;z-index:6;padding:0 52px 96px;max-width:1000px;}
+.hero-kicker{display:inline-flex;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--blup);margin-bottom:32px;opacity:0;animation:up .7s .15s forwards;}
+.hk-line{width:24px;height:1px;background:var(--blup);}
+.hk-dot{width:5px;height:5px;border-radius:50%;background:var(--blup);animation:ndot 2s infinite;}
+.hero-h1{margin-bottom:30px;opacity:0;animation:up .92s .32s forwards;text-shadow:0 4px 40px rgba(6,6,11,.9);}
+.hero-sub{max-width:420px;margin-bottom:44px;opacity:0;animation:up .76s .52s forwards;}
+.hero-acts{display:flex;align-items:center;gap:18px;flex-wrap:wrap;opacity:0;animation:up .72s .68s forwards;}
+.hero-side{position:absolute;right:52px;bottom:96px;z-index:6;display:flex;flex-direction:column;align-items:flex-end;gap:14px;opacity:0;animation:up .7s .92s forwards;}
+.hero-tag{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:rgba(173,184,200,.42);text-transform:uppercase;}
+.hero-tag-bar{width:18px;height:1px;background:rgba(59,130,246,.35);}
+.hero-bar{position:absolute;bottom:0;left:0;right:0;z-index:6;display:flex;border-top:1px solid var(--edge);background:rgba(6,6,11,.76);backdrop-filter:blur(20px);opacity:0;animation:up .65s 1.05s forwards;}
+.hbc{flex:1;display:flex;align-items:center;gap:16px;padding:22px 30px;border-right:1px solid var(--edge);cursor:default;transition:background .2s;}
+.hbc:last-child{border-right:none;}
+.hbc:hover{background:rgba(37,99,235,.06);}
+.hbc-n{font-size:26px;font-weight:900;letter-spacing:-.045em;color:var(--white);line-height:1;}
+.hbc-s{font-size:17px;color:var(--bluh);}
+.hbc-l{font-family:var(--mono);font-size:9px;letter-spacing:.15em;color:var(--smoke);text-transform:uppercase;line-height:1.45;}
+#tw{display:inline;}
+#twc{display:inline-block;width:4px;height:.82em;background:var(--bluh);margin-left:3px;vertical-align:middle;animation:blink .9s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+
+/* MARQUEE */
+.mq-wrap{overflow:hidden;background:var(--deep);border-bottom:1px solid var(--edge);}
+.mq-track{display:flex;width:max-content;animation:mqs 30s linear infinite;}
+.mqi{display:flex;align-items:center;gap:20px;padding:14px 34px;font-family:var(--mono);font-size:9.5px;letter-spacing:.24em;color:var(--smoke);text-transform:uppercase;white-space:nowrap;}
+.mqi-sep{color:var(--bluh);font-size:6px;}
+@keyframes mqs{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* TWO-COL */
+.two-col{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--edge);}
+.col-pad{padding:96px 52px;}
+.col-scene{position:relative;overflow:hidden;}
+
+/* SERVICE LIST */
+.se-list{display:flex;flex-direction:column;margin-top:40px;}
+.se-item{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--edge);cursor:default;transition:border-color .25s,padding-left .22s;}
+.se-item:first-child{border-top:1px solid var(--edge);}
+.se-item:hover{border-bottom-color:var(--blue);padding-left:6px;}
+.se-item:hover .se-name{color:#fff;}
+.se-item:hover .se-arr{color:var(--bluh);transform:translateX(5px);}
+.se-idx{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--smoke);width:24px;flex-shrink:0;}
+.se-name{font-size:14px;font-weight:600;letter-spacing:.03em;color:var(--fog);flex:1;padding:0 16px;transition:color .22s;}
+.se-arr{font-size:16px;color:var(--smoke);transition:color .2s,transform .2s;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--edge);}
+.stat{padding:56px 48px;border-right:1px solid var(--edge);position:relative;overflow:hidden;cursor:default;}
+.stat:last-child{border-right:none;}
+.stat::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 110% 80% at 0 100%,rgba(37,99,235,.09),transparent 65%);opacity:0;transition:opacity .4s;}
+.stat:hover::before{opacity:1;}
+.stat-n{font-size:54px;font-weight:900;letter-spacing:-.05em;line-height:1;margin-bottom:10px;}
+.stat-v{color:var(--white);}
+.stat-s{font-size:34px;color:var(--bluh);}
+.stat-l{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--smoke);text-transform:uppercase;}
+
+/* PROCESS */
+.proc-wrap{display:grid;grid-template-columns:380px 1fr;border-bottom:1px solid var(--edge);}
+.proc-left{padding:96px 52px;border-right:1px solid var(--edge);position:sticky;top:66px;height:fit-content;}
+.ps{display:grid;grid-template-columns:82px 1fr 48px;align-items:center;border-bottom:1px solid var(--edge);min-height:92px;position:relative;cursor:default;transition:background .25s;padding:0 52px 0 0;}
+.ps:first-child{border-top:1px solid var(--edge);}
+.ps:hover{background:rgba(255,255,255,.013);}
+.ps-bar{position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--blue);transform:scaleY(0);transform-origin:top;transition:transform .42s cubic-bezier(.4,0,.2,1);}
+.ps:hover .ps-bar{transform:scaleY(1);}
+.ps-num{font-size:32px;font-weight:900;letter-spacing:-.05em;color:rgba(255,255,255,.05);padding:24px 0 24px 24px;}
+.ps-info{padding:24px 20px;}
+.ps-name{font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.ps-body{font-size:12.5px;color:var(--smoke);line-height:1.72;}
+.ps-arr{font-size:18px;color:var(--edge2);transition:color .2s,transform .2s;text-align:right;}
+.ps:hover .ps-arr{color:var(--bluh);transform:translateX(5px);}
+
+/* PROJECT PREVIEW */
+.pp{position:relative;min-height:76vh;display:flex;align-items:flex-end;border-bottom:1px solid var(--edge);}
+.pp-content{position:relative;z-index:6;padding:0 52px 68px;display:flex;align-items:flex-end;justify-content:space-between;width:100%;}
+.pp-left{max-width:520px;}
+.pp-right{text-align:right;flex-shrink:0;margin-left:32px;}
+.pp-result{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--blup);text-transform:uppercase;margin-bottom:18px;border:1px solid rgba(59,130,246,.22);padding:7px 16px;background:rgba(37,99,235,.07);}
+
+/* WHY */
+.why-wrap{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--edge);}
+.why-left{padding:96px 52px;border-right:1px solid var(--edge);}
+.why-right{padding:96px 52px;}
+.why-item{padding:24px 0;border-bottom:1px solid var(--edge);cursor:default;transition:padding-left .26s;}
+.why-item:first-child{border-top:1px solid var(--edge);padding-top:0;}
+.why-item:hover{padding-left:10px;}
+.why-title{font-size:14px;font-weight:700;color:var(--chalk);margin-bottom:9px;letter-spacing:-.01em;}
+.why-body{font-size:13px;color:var(--smoke);line-height:1.8;}
+
+/* BRAND STATEMENT */
+.brand-stmt{position:relative;min-height:55vh;display:flex;align-items:center;justify-content:center;text-align:center;border-bottom:1px solid var(--edge);}
+.bs-content{position:relative;z-index:6;padding:80px 52px;max-width:720px;}
+.bs-quote{font-size:clamp(26px,4vw,48px);font-weight:800;line-height:1.16;letter-spacing:-.022em;margin-bottom:24px;}
+.de-badge{display:inline-flex;align-items:center;gap:12px;padding:10px 22px;border:1px solid var(--edge2);background:rgba(6,6,11,.55);backdrop-filter:blur(8px);}
+.de-flag{display:flex;flex-direction:column;width:20px;border-radius:1px;overflow:hidden;}
+.de-flag span{height:4px;display:block;}
+.df1{background:#111}.df2{background:#DD0000}.df3{background:#FFCE00}
+.de-label{font-family:var(--mono);font-size:9px;letter-spacing:.28em;color:var(--fog);text-transform:uppercase;}
+
+/* CTA */
+.cta-sec{position:relative;text-align:center;padding:152px 52px;overflow:hidden;border-bottom:1px solid var(--edge);}
+.cta-rings{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.cr{position:absolute;border-radius:50%;border:1px solid rgba(37,99,235,.09);transform:translate(-50%,-50%);animation:crp 5.5s ease-in-out infinite;}
+.cr:nth-child(1){width:230px;height:230px}
+.cr:nth-child(2){width:430px;height:430px;animation-delay:.7s}
+.cr:nth-child(3){width:650px;height:650px;animation-delay:1.4s}
+.cr:nth-child(4){width:880px;height:880px;animation-delay:2.1s}
+@keyframes crp{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.3}50%{transform:translate(-50%,-50%) scale(1.03);opacity:.75}}
+.cta-inner{position:relative;z-index:2;}
+.cta-row{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:44px;}
+.cta-email{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--smoke);text-decoration:none;border-bottom:1px solid var(--edge2);padding-bottom:2px;cursor:pointer;transition:color .2s,border-color .2s;}
+.cta-email:hover{color:var(--blup);border-color:var(--blup);}
+
+/* FOOTER */
+footer{background:var(--deep);border-top:1px solid var(--edge);padding:60px 52px 32px;}
+.f-top{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:44px;padding-bottom:52px;border-bottom:1px solid var(--edge);margin-bottom:26px;}
+.f-brand{display:flex;flex-direction:column;gap:16px;}
+.f-logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.f-logo svg{width:26px;height:26px;}
+.f-logo-name{font-size:12.5px;font-weight:900;letter-spacing:.14em;}
+.f-tagline{font-size:12px;color:var(--smoke);line-height:1.68;max-width:210px;}
+.f-col-title{font-family:var(--mono);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--smoke);margin-bottom:18px;}
+.f-col-links{display:flex;flex-direction:column;gap:12px;}
+.f-col-links a{font-size:13px;color:var(--ash);transition:color .2s;cursor:pointer;}
+.f-col-links a:hover{color:#fff;}
+.f-bot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.f-copy{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--smoke);}
+.f-de{display:flex;align-items:center;gap:10px;}
+.f-legal{display:flex;gap:22px;}
+.f-legal a{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--smoke);transition:color .2s;cursor:pointer;}
+.f-legal a:hover{color:var(--ash);}
+
+/* PAGE HERO */
+.page-hero{position:relative;min-height:60vh;display:flex;align-items:flex-end;border-bottom:1px solid var(--edge);overflow:hidden;}
+.ph-content{position:relative;z-index:6;padding:0 52px 68px;max-width:760px;}
+.ph-eye{font-family:var(--mono);font-size:9.5px;letter-spacing:.3em;color:var(--blup);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.ph-eye::before{content:"";width:14px;height:1px;background:var(--blup);}
+
+/* SERVICES PAGE */
+.svc-detail{border-bottom:1px solid var(--edge);}
+.svc-row{display:grid;grid-template-columns:1fr 1fr;min-height:440px;border-bottom:1px solid var(--edge);}
+.svc-txt{padding:68px 52px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--edge);}
+.svc-img-panel{position:relative;overflow:hidden;}
+.svc-bullets{display:flex;flex-direction:column;gap:10px;margin-top:22px;}
+.svc-bullet{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ash);}
+.svc-bullet::before{content:"→";color:var(--bluh);font-size:11px;flex-shrink:0;}
+
+/* PRICING */
+.pricing-sec{padding:96px 52px;border-bottom:1px solid var(--edge);background:var(--deep);}
+.pricing-hdr{max-width:540px;margin-bottom:68px;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--edge);}
+.pc{background:var(--void);padding:48px 40px;position:relative;overflow:hidden;cursor:default;transition:background .3s;}
+.pc:hover{background:var(--surface);}
+.pc.feat{background:var(--surface);}
+.pc.feat::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--bluh));}
+.pc-badge{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--blup);text-transform:uppercase;margin-bottom:22px;}
+.pc-type{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--fog);margin-bottom:6px;}
+.pc-name{font-size:22px;font-weight:900;letter-spacing:-.02em;margin-bottom:4px;}
+.pc-price{font-size:42px;font-weight:900;letter-spacing:-.044em;line-height:1;margin-bottom:5px;}
+.pc-price sub{font-size:14px;color:var(--smoke);font-weight:400;vertical-align:middle;}
+.pc-cycle{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:var(--smoke);text-transform:uppercase;margin-bottom:26px;}
+.pc-line{height:1px;background:var(--edge);margin-bottom:22px;}
+.pc-feats{display:flex;flex-direction:column;gap:11px;margin-bottom:30px;}
+.pf{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--ash);line-height:1.5;}
+.pf-dot{width:5px;height:5px;border-radius:50%;background:var(--bluh);flex-shrink:0;margin-top:6px;}
+.pf-dot.off{background:var(--smoke);opacity:.3;}
+.pricing-note{margin-top:52px;padding:36px 44px;border:1px solid var(--edge2);background:rgba(37,99,235,.04);display:flex;align-items:flex-start;gap:22px;}
+.pricing-note-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.pricing-note-text{font-size:14px;color:var(--ash);line-height:1.82;}
+.pricing-note-text strong{color:var(--chalk);font-weight:600;}
+
+/* WORK */
+.work-intro{padding:80px 52px;display:grid;grid-template-columns:1fr 1fr;gap:68px;align-items:end;border-bottom:1px solid var(--edge);}
+.cs{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--edge);min-height:65vh;}
+.cs.flip .cs-vis{order:-1;}
+.cs-vis{position:relative;overflow:hidden;}
+.cs-txt{padding:68px 52px;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--edge);}
+.cs.flip .cs-txt{border-right:none;border-left:1px solid var(--edge);}
+.cs-result{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--blup);text-transform:uppercase;margin-bottom:14px;border:1px solid rgba(59,130,246,.2);padding:7px 16px;background:rgba(37,99,235,.07);}
+.cs-tech{display:flex;gap:7px;flex-wrap:wrap;margin-top:26px;}
+.cs-pill{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--smoke);border:1px solid var(--edge2);padding:4px 12px;text-transform:uppercase;}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--edge);}
+.about-left{padding:96px 52px;border-right:1px solid var(--edge);}
+.about-right{padding:96px 52px;display:flex;flex-direction:column;gap:40px;}
+.brand-svg{max-width:260px;margin:40px 0 30px;}
+.vals{display:flex;flex-direction:column;}
+.vi{display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid var(--edge);cursor:default;transition:padding-left .24s;}
+.vi:hover{padding-left:8px;}
+.vi:hover .vi-name{color:#fff;}
+.vi-name{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);transition:color .22s;}
+.vi-arr{font-size:14px;color:var(--smoke);transition:color .22s;}
+.vi:hover .vi-arr{color:var(--bluh);}
+.quote-box{background:var(--surface);border:1px solid var(--edge2);padding:44px;position:relative;overflow:hidden;}
+.quote-box::before{content:"C";position:absolute;top:12px;left:28px;font-size:180px;font-weight:900;line-height:1;color:rgba(37,99,235,.07);pointer-events:none;}
+.quote-box::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--bluh),transparent);}
+.quote-text{font-size:clamp(15px,1.7vw,20px);font-weight:700;line-height:1.42;letter-spacing:-.01em;position:relative;z-index:1;margin-bottom:26px;}
+.quote-de{display:flex;align-items:center;gap:12px;position:relative;z-index:1;}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--edge);}
+.ms{padding:24px 28px;border-right:1px solid var(--edge);}
+.ms:last-child{border-right:none;}
+.ms-n{font-size:24px;font-weight:900;letter-spacing:-.03em;margin-bottom:4px;}
+.ms-n sup{font-size:14px;color:var(--bluh);}
+.ms-l{font-family:var(--mono);font-size:8.5px;letter-spacing:.18em;color:var(--smoke);text-transform:uppercase;}
+.german-strip{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--edge);}
+.gs{padding:56px 52px;border-right:1px solid var(--edge);}
+.gs:last-child{border-right:none;}
+.gs-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--smoke);text-transform:uppercase;margin-bottom:14px;}
+.gs-n{font-size:60px;font-weight:900;letter-spacing:-.054em;line-height:1;margin-bottom:8px;}
+.gs-n span{color:var(--bluh);}
+.gs-body{font-size:13px;color:var(--smoke);line-height:1.76;}
+
+/* CONTACT */
+.contact-layout{display:grid;grid-template-columns:1fr 1.12fr;}
+.cl{padding:76px 52px;border-right:1px solid var(--edge);background:var(--deep);display:flex;flex-direction:column;justify-content:space-between;min-height:calc(100vh - 66px);}
+.cr-wrap{padding:76px 52px;}
+.contact-info{margin-top:48px;display:flex;flex-direction:column;}
+.ci{padding:20px 0;border-bottom:1px solid var(--edge);}
+.ci-l{font-family:var(--mono);font-size:9px;letter-spacing:.26em;text-transform:uppercase;color:var(--smoke);margin-bottom:6px;}
+.ci-v{font-size:14px;color:var(--ash);}
+.ci-v a{color:var(--blup);}
+.contact-base{margin-top:auto;padding-top:36px;}
+.cbase-card{background:var(--surface);border:1px solid var(--edge2);padding:26px;position:relative;}
+.cbase-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--bluh),transparent);}
+.fg{margin-bottom:20px;}
+.fl{font-family:var(--mono);font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--smoke);margin-bottom:8px;display:block;}
+.fi,.ft,.fs{width:100%;background:var(--surface);border:1px solid var(--edge2);color:var(--white);padding:13px 17px;font-size:13.5px;font-family:"Inter",sans-serif;border-radius:3px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none;}
+.fi::placeholder,.ft::placeholder{color:var(--smoke);}
+.fi:focus,.ft:focus,.fs:focus{border-color:var(--bluh);}
+.ft{resize:vertical;min-height:108px;}
+.fs option{background:var(--surface);}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
+.svc-pills2{display:flex;flex-wrap:wrap;gap:8px;}
+.sp2{padding:7px 16px;border:1px solid var(--edge2);border-radius:2px;font-family:var(--mono);font-size:9px;letter-spacing:.13em;color:var(--smoke);text-transform:uppercase;cursor:pointer;transition:all .2s;user-select:none;background:var(--surface);}
+.sp2.on{background:rgba(37,99,235,.14);border-color:var(--bluh);color:var(--blup);}
+.sp2:hover:not(.on){border-color:var(--ash);color:var(--ash);}
+.form-submit{width:100%;padding:15px;font-size:12px;justify-content:center;margin-top:4px;}
+.success-box{display:none;text-align:center;padding:52px 28px;border:1px solid rgba(37,99,235,.28);background:rgba(37,99,235,.06);}
+.success-box.show{display:block;}
+.success-icon{font-size:42px;margin-bottom:16px;}
+.success-h{font-size:22px;font-weight:800;margin-bottom:10px;}
+.success-p{font-size:14px;color:var(--ash);line-height:1.78;}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .78s ease,transform .78s ease;}
+.rv.in{opacity:1;transform:none;}
+.rv.d1{transition-delay:.1s}.rv.d2{transition-delay:.22s}.rv.d3{transition-delay:.34s}.rv.d4{transition-delay:.46s}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .two-col,.why-wrap,.about-grid{grid-template-columns:1fr;}
+  .col-scene{min-height:280px;}
+  .proc-wrap{grid-template-columns:1fr;}
+  .proc-left{position:static;padding-bottom:0;}
+  .f-top{grid-template-columns:1fr 1fr;}
+  .svc-row{grid-template-columns:1fr;}
+  .svc-txt{border-right:none;border-bottom:1px solid var(--edge);}
+  .svc-img-panel{min-height:260px;}
+  .cs{grid-template-columns:1fr;}
+  .cs-vis{min-height:300px;}
+  .cs-txt{border:none!important;border-bottom:1px solid var(--edge)!important;}
+  .cs.flip .cs-vis{order:0;}
+  .contact-layout{grid-template-columns:1fr;}
+  .cl{min-height:auto;border-right:none;border-bottom:1px solid var(--edge);}
+  .work-intro{grid-template-columns:1fr;gap:24px;}
+  .pricing-grid{grid-template-columns:1fr 1fr;}
+  .german-strip{grid-template-columns:1fr;}
+  .gs{border-right:none;border-bottom:1px solid var(--edge);}
+}
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-links{display:none!important;}
+  .nav-ham{display:flex;}
+  .hero-content{padding:0 20px 120px;}
+  .hero-side{display:none;}
+  .hbc{padding:16px 18px;}
+  .hbc-n{font-size:22px;}
+  .hbc-s{font-size:15px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .stat:nth-child(2n){border-right:none;}
+  .ps{padding:0;}
+  .ps-num{padding:22px 0 22px 20px;}
+  .ps-info{padding:22px 14px;}
+  .ps-arr{padding-right:20px;}
+  .proc-left,.col-pad,.why-left,.why-right,.about-left,.about-right,.ph-content,.pp-content,.work-intro,.cl,.cr-wrap,.cta-sec{padding-left:20px;padding-right:20px;}
+  footer{padding:48px 20px 28px;}
+  .f-top{grid-template-columns:1fr;gap:32px;padding-bottom:36px;}
+  .f-bot{flex-direction:column;align-items:flex-start;gap:14px;}
+  .page-hero{min-height:52vh;}
+  .cs-txt{padding:48px 20px;}
+  .svc-txt{padding:48px 20px;}
+  .pricing-sec{padding:72px 20px;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .pricing-note{flex-direction:column;gap:14px;padding:24px;}
+  .pp-content{flex-direction:column;align-items:flex-start;gap:20px;padding:0 20px 48px;}
+  .pp-right{text-align:left;margin-left:0;}
+  .about-right{padding-top:0;padding-bottom:52px;}
+  .mini-stats{grid-template-columns:1fr 1fr;}
+  .form-row2{grid-template-columns:1fr;}
+}
+@media(max-width:480px){
+  .dlg{font-size:clamp(36px,12vw,56px);}
+  .dxl{font-size:clamp(44px,14vw,68px);}
+  .hero-bar{flex-wrap:wrap;}
+  .hbc{flex:0 0 50%;border-bottom:1px solid var(--edge);}
+  .hero-acts{flex-direction:column;align-items:flex-start;}
+  .cta-row{flex-direction:column;}
+  .stats-row{grid-template-columns:1fr;}
+  .stat{border-right:none!important;}
+}
+</style>
+</head>
+<body>
+<div class="mob-drawer" id="mob">
+  <a onclick="go('home')" id="mm-home" class="act">Home</a>
+  <a onclick="go('services')" id="mm-services">Services</a>
+  <a onclick="go('work')" id="mm-work">Work</a>
+  <a onclick="go('about')" id="mm-about">About</a>
+  <a onclick="go('contact')" class="mob-cta">Contact</a>
+</div>
+
+<nav>
+  <div class="nav-logo" onclick="go('home')"><svg viewBox="0 0 34 34" fill="none"><path d="M3 31L12 3H17L21.5 17L26 3H31L22 31H17L12.5 17.5L7.5 31H3Z" fill="white"/><line x1="18.5" y1="21" x2="22.5" y2="31" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"/></svg>
+    <div class="nav-brand"><span class="nav-alim">ALIM</span><span class="nav-sys">Systems</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a onclick="go('home')" id="nl-home" class="act">Home</a></li>
+    <li><a onclick="go('services')" id="nl-services">Services</a></li>
+    <li><a onclick="go('work')" id="nl-work">Work</a></li>
+    <li><a onclick="go('about')" id="nl-about">About</a></li>
+    <li><a onclick="go('contact')" class="nav-cta" id="nl-contact"><span class="nav-dot"></span>Contact</a></li>
+  </ul>
+  <button class="nav-ham" id="ham" onclick="toggleMob()"><span></span><span></span><span></span></button>
+</nav>
+<div class="page act" id="page-home"><section id="hero" class="cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(125deg,#07080e 0%,#0b0e1e 42%,#070810 100%);"></div><div class="s-grid" style="mask-image:radial-gradient(ellipse 82% 70% at 65% 38%,black,transparent 72%);"></div><div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div><div class="s-shaft" style="width:24%;left:8%;opacity:.5;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.12) 32%,transparent 80%);filter:blur(36px);"></div><div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 8s ease-in-out infinite;"></div><div class="s-floor" style="background:radial-gradient(ellipse 65% 100% at 52% 100%,rgba(37,99,235,0.10),transparent 68%);"></div><div class="s-dots"></div></div><div class="ov-grade" style="background:rgba(6,6,11,0.70);"></div><div class="ov-vign"></div><div class="ov-bot" style="height:78%;background:linear-gradient(to top,var(--void) 0%,rgba(6,6,11,0.62) 38%,transparent 100%);"></div><div class="ov-left" style="width:64%;background:linear-gradient(to right,rgba(6,6,11,0.88) 6%,rgba(6,6,11,0.46) 40%,transparent 100%);"></div><div class="cin-grain"></div>
+  <div class="hero-content">
+    <div class="hero-kicker"><span class="hk-line"></span><span class="hk-dot"></span>Engineered in Germany · Built for the World</div>
+    <h1 class="dxl hero-h1"><span id="tw"></span><span id="twc"></span><br><span class="dim">digital</span><br>systems<span class="dot-blue">.</span></h1>
+    <p class="body-lg hero-sub">We design and engineer precision digital systems — web platforms, AI solutions, and automation infrastructure for businesses that demand more.</p>
+    <div class="hero-acts">
+      <button class="btn btn-solid" onclick="go('contact')">Start a Project →</button>
+      <button class="btn-link" onclick="go('work')">View Our Work</button>
+    </div>
+  </div>
+  <div class="hero-side">
+    <div class="hero-tag"><span class="hero-tag-bar"></span>German Engineering</div>
+    <div class="hero-tag"><span class="hero-tag-bar"></span>Digital Innovation</div>
+    <div class="hero-tag"><span class="hero-tag-bar"></span>Enterprise Grade</div>
+  </div>
+  <div class="hero-bar">
+    <div class="hbc"><div class="hbc-n"><span class="cnt" data-to="12">0</span><span class="hbc-s">+</span></div><div class="hbc-l">Projects<br>Shipped</div></div>
+    <div class="hbc"><div class="hbc-n"><span class="cnt" data-to="3">0</span><span class="hbc-s">+</span></div><div class="hbc-l">Years<br>Active</div></div>
+    <div class="hbc"><div class="hbc-n"><span class="cnt" data-to="8">0</span><span class="hbc-s">+</span></div><div class="hbc-l">Industries<br>Served</div></div>
+    <div class="hbc"><div class="hbc-n"><span class="cnt" data-to="24">0</span><span class="hbc-s">h</span></div><div class="hbc-l">Response<br>Time</div></div>
+  </div>
+</section><div class="mq-wrap"><div class="mq-track">
+<span class="mqi">Web Engineering <span class="mqi-sep">◆</span></span><span class="mqi">AI Integration <span class="mqi-sep">◆</span></span><span class="mqi">Process Automation <span class="mqi-sep">◆</span></span><span class="mqi">System Architecture <span class="mqi-sep">◆</span></span><span class="mqi">Engineered in Germany <span class="mqi-sep">◆</span></span><span class="mqi">Backend Infrastructure <span class="mqi-sep">◆</span></span><span class="mqi">Precision Engineering <span class="mqi-sep">◆</span></span><span class="mqi">Digital Transformation <span class="mqi-sep">◆</span></span><span class="mqi">Web Engineering <span class="mqi-sep">◆</span></span><span class="mqi">AI Integration <span class="mqi-sep">◆</span></span><span class="mqi">Process Automation <span class="mqi-sep">◆</span></span><span class="mqi">System Architecture <span class="mqi-sep">◆</span></span><span class="mqi">Engineered in Germany <span class="mqi-sep">◆</span></span><span class="mqi">Backend Infrastructure <span class="mqi-sep">◆</span></span><span class="mqi">Precision Engineering <span class="mqi-sep">◆</span></span><span class="mqi">Digital Transformation <span class="mqi-sep">◆</span></span>
+</div></div><section class="two-col rv">
+  <div class="col-pad">
+    <div class="eyebrow">What We Build</div>
+    <h2 class="dlg">Not an agency.<br>An engineering<br>studio.</h2>
+    <p class="body-md" style="margin-top:18px;max-width:360px;">Precise digital systems — tailored to your operations, never assembled from templates.</p>
+    <div class="se-list">
+      <div class="se-item"><span class="se-idx">01</span><span class="se-name">Web Platforms &amp; Applications</span><span class="se-arr">→</span></div>
+      <div class="se-item"><span class="se-idx">02</span><span class="se-name">AI Integration &amp; Intelligence</span><span class="se-arr">→</span></div>
+      <div class="se-item"><span class="se-idx">03</span><span class="se-name">Process Automation</span><span class="se-arr">→</span></div>
+      <div class="se-item"><span class="se-idx">04</span><span class="se-name">Backend &amp; Infrastructure</span><span class="se-arr">→</span></div>
+    </div>
+    <button class="btn btn-ghost" style="margin-top:32px;" onclick="go('services')">Explore Services →</button>
+  </div>
+  <div class="col-scene cinematic">
+    <div class="scene"><div class="s-base" style="background:linear-gradient(135deg,#080b16 0%,#0b0d1c 100%);"></div>
+    <div class="s-grid" style="mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black,transparent 70%);"></div>
+    <div class="s-shaft" style="width:22%;left:39%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.20) 28%,rgba(96,165,250,0.12) 55%,transparent 85%);filter:blur(34px);"></div>
+    <div class="s-bloom" style="width:62%;height:62%;top:18%;left:24%;background:radial-gradient(circle,rgba(37,99,235,0.16) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+    <div class="s-dots"></div></div>
+    <div class="ov-grade" style="background:rgba(6,6,11,0.60);"></div><div class="ov-vign"></div><div class="cin-grain"></div>
+  </div>
+</section><div class="stats-row">
+  <div class="stat rv"><div class="stat-n"><span class="cnt stat-v" data-to="12">0</span><span class="stat-s">+</span></div><div class="stat-l">Projects shipped</div></div>
+  <div class="stat rv d1"><div class="stat-n"><span class="cnt stat-v" data-to="8">0</span><span class="stat-s">+</span></div><div class="stat-l">Industries served</div></div>
+  <div class="stat rv d2"><div class="stat-n"><span class="cnt stat-v" data-to="3">0</span><span class="stat-s">+</span></div><div class="stat-l">Years building</div></div>
+  <div class="stat rv d3"><div class="stat-n"><span class="cnt stat-v" data-to="100">0</span><span class="stat-s">%</span></div><div class="stat-l">On-time delivery</div></div>
+</div><section class="proc-wrap">
+  <div class="proc-left rv">
+    <div class="eyebrow">How We Work</div>
+    <h2 class="dlg">Precision<br>engineered.<br>Every time.</h2>
+    <p class="body-md" style="margin-top:18px;">We don't guess. We architect. Every project runs on deep understanding, clear decisions, and disciplined execution.</p>
+  </div>
+  <div>
+    <div class="ps rv"><div class="ps-bar"></div><div class="ps-num">01</div><div class="ps-info"><div class="ps-name">Discovery</div><div class="ps-body">Map your processes, constraints, and goals before writing a single line of code.</div></div><div class="ps-arr">→</div></div>
+    <div class="ps rv d1"><div class="ps-bar"></div><div class="ps-num">02</div><div class="ps-info"><div class="ps-name">Architecture</div><div class="ps-body">Technology decisions made for today's needs and tomorrow's scale.</div></div><div class="ps-arr">→</div></div>
+    <div class="ps rv d2"><div class="ps-bar"></div><div class="ps-num">03</div><div class="ps-info"><div class="ps-name">Build &amp; Iterate</div><div class="ps-body">Agile sprints, continuous feedback, rigorous QA, radical transparency.</div></div><div class="ps-arr">→</div></div>
+    <div class="ps rv d3"><div class="ps-bar"></div><div class="ps-num">04</div><div class="ps-info"><div class="ps-name">Deploy &amp; Support</div><div class="ps-body">Seamless launch with monitoring, maintenance, and long-term partnership.</div></div><div class="ps-arr">→</div></div>
+  </div>
+</section><section class="pp cinematic rv">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(125deg,#07080e 0%,#0b0e1e 42%,#070810 100%);"></div><div class="s-grid" style="mask-image:radial-gradient(ellipse 82% 70% at 65% 38%,black,transparent 72%);"></div><div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div><div class="s-shaft" style="width:24%;left:8%;opacity:.5;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.12) 32%,transparent 80%);filter:blur(36px);"></div><div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 8s ease-in-out infinite;"></div><div class="s-floor" style="background:radial-gradient(ellipse 65% 100% at 52% 100%,rgba(37,99,235,0.10),transparent 68%);"></div><div class="s-dots"></div></div><div class="ov-grade" style="background:rgba(6,6,11,0.74);"></div><div class="ov-vign"></div><div class="ov-bot" style="height:78%;background:linear-gradient(to top,var(--void) 0%,rgba(6,6,11,0.62) 38%,transparent 100%);"></div><div class="ov-left" style="width:64%;background:linear-gradient(to right,rgba(6,6,11,0.88) 6%,rgba(6,6,11,0.46) 40%,transparent 100%);"></div><div class="cin-grain"></div>
+  <div class="pp-content">
+    <div class="pp-left">
+      <div class="eyebrow" style="margin-bottom:14px;">Featured Project</div>
+      <div class="pp-result">↑ 60% reduction in operational overhead</div>
+      <h2 class="dmd" style="margin-bottom:14px;">Logistics Operations Platform</h2>
+      <p class="body-md" style="max-width:400px;margin-bottom:24px;">Real-time tracking, role-based access, and automated reporting — replacing spreadsheets and WhatsApp groups entirely.</p>
+      <button class="btn btn-ghost" onclick="go('work')">View All Projects →</button>
+    </div>
+    <div class="pp-right">
+      <div class="label" style="margin-bottom:8px;">Stack</div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <span class="cs-pill">React</span><span class="cs-pill">Node.js</span><span class="cs-pill">PostgreSQL</span>
+      </div>
+    </div>
+  </div>
+</section><section class="why-wrap">
+  <div class="why-left rv">
+    <div class="eyebrow">Why ALIM Systems</div>
+    <h2 class="dlg">The difference<br>is in the detail.</h2>
+    <p class="body-md" style="margin-top:18px;max-width:340px;">Not a traditional agency. An engineering studio built on precision — small enough to care, experienced enough to deliver.</p>
+    <button class="btn btn-solid" style="margin-top:36px;" onclick="go('contact')">Work With Us →</button>
+  </div>
+  <div class="why-right rv d2">
+    <div class="why-item"><div class="why-title">German Engineering Mindset</div><div class="why-body">Thoroughness over speed. We plan carefully, build precisely, document everything. No shortcuts that come back to haunt you.</div></div>
+    <div class="why-item"><div class="why-title">No Templates. No Shortcuts.</div><div class="why-body">Every system built from scratch for your specific requirements. We don't reskin themes and call it custom development.</div></div>
+    <div class="why-item"><div class="why-title">AI Expertise Built In</div><div class="why-body">From LLM pipelines to intelligent automation — AI that genuinely upgrades your operations, not a feature checkbox.</div></div>
+    <div class="why-item"><div class="why-title">Long-Term Scalability</div><div class="why-body">We build for where you're going. Clean architecture that grows with your business without costly rewrites.</div></div>
+    <div class="why-item"><div class="why-title">A Partner, Not a Vendor</div><div class="why-body">Honest advice, clear communication, and accountability — before, during, and long after launch.</div></div>
+  </div>
+</section><section class="brand-stmt cinematic rv">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(160deg,#06070d 0%,#0a0b18 52%,#050609 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 70% 60% at 50% 50%,black,transparent 68%);"></div>
+  <div class="s-shaft" style="width:22%;left:39%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.20) 28%,rgba(96,165,250,0.12) 55%,transparent 85%);filter:blur(34px);"></div>
+  <div class="s-bloom" style="width:62%;height:62%;top:18%;left:24%;background:radial-gradient(circle,rgba(37,99,235,0.16) 0%,transparent 70%);animation:bloomP 6s ease-in-out infinite;"></div>
+  <div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);opacity:.42;"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.82);"></div><div class="ov-vign"></div><div class="cin-grain"></div>
+  <div class="bs-content">
+    <p class="bs-quote">"German Engineering.<br>Digital Innovation."</p>
+    <p class="body-md" style="margin-bottom:24px;max-width:360px;margin-left:auto;margin-right:auto;">Precision engineered in Germany. Built to power businesses worldwide.</p>
+    <div class="de-badge" style="margin:0 auto;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label">Engineered in Germany</span></div>
+  </div>
+</section><div class="cta-sec rv"><div class="cta-rings"><div class="cr"></div><div class="cr"></div><div class="cr"></div><div class="cr"></div></div>
+  <div class="cta-inner">
+    <div class="eyebrow" style="justify-content:center;">Let's Build Together</div>
+    <h2 class="dlg" style="margin-bottom:18px;">Ready to ship<br>something real<span class="dot-blue">?</span></h2>
+    <p class="body-lg" style="max-width:330px;margin:0 auto;">Every great product starts with a conversation. We'll respond in 24 hours.</p>
+    <div class="cta-row">
+      <button class="btn btn-solid" onclick="go('contact')">Start a Project →</button>
+      <a href="mailto:hello@alimsystems.de" class="cta-email">hello@alimsystems.de</a>
+    </div>
+  </div>
+</div><footer>
+  <div class="f-top">
+    <div class="f-brand">
+      <div class="f-logo" onclick="go('home')"><svg viewBox="0 0 28 28" fill="none"><path d="M2 26L9.5 2H13.5L17.5 14.5L21.5 2H26L18 26H14L10 14.5L6 26H2Z" fill="white"/><line x1="15" y1="18" x2="18.5" y2="26" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/></svg><span class="f-logo-name">ALIM SYSTEMS</span></div>
+      <p class="f-tagline">Precision engineered in Germany. Built to power businesses worldwide.</p>
+      <div class="de-badge" style="padding:7px 16px;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label" style="font-size:8px;">Made in Germany</span></div>
+    </div>
+    <div><div class="f-col-title">Company</div><div class="f-col-links"><a onclick="go('about')">About Us</a><a onclick="go('work')">Our Work</a><a onclick="go('services')">Services</a><a onclick="go('contact')">Contact</a></div></div>
+    <div><div class="f-col-title">Services</div><div class="f-col-links"><a onclick="go('services')">Web Platforms</a><a onclick="go('services')">AI Integration</a><a onclick="go('services')">Automation</a><a onclick="go('services')">Infrastructure</a></div></div>
+    <div><div class="f-col-title">Contact</div><div class="f-col-links"><a href="mailto:hello@alimsystems.de">hello@alimsystems.de</a><a>Germany · Remote-friendly</a><a>English · Deutsch</a><a onclick="go('contact')">Start a Project →</a></div></div>
+  </div>
+  <div class="f-bot">
+    <span class="f-copy">© 2026 ALIM Systems. All rights reserved.</span>
+    <div class="f-de"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="f-copy">Engineered in Germany</span></div>
+    <div class="f-legal"><a>Imprint</a><a>Privacy Policy</a><a>Terms</a></div>
+  </div>
+</footer></div><div class="page" id="page-services"><div class="page-hero cinematic rv">
+  <div class="scene">
+  <div class="s-base" style="background:linear-gradient(135deg,#080b16 0%,#0b0d1c 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 74% 62% at 70% 40%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div>
+  <div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 62% 100% at 54% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.74);"></div>
+  <div class="ov-vign"></div>
+  <div class="ov-bot" style="height:78%;background:linear-gradient(to top,var(--void) 0%,rgba(6,6,11,0.62) 38%,transparent 100%);"></div>
+  <div class="ov-left" style="width:64%;background:linear-gradient(to right,rgba(6,6,11,0.88) 6%,rgba(6,6,11,0.46) 40%,transparent 100%);"></div>
+  <div class="cin-grain"></div>
+  <div class="ph-content"><div class="ph-eye">Services</div>
+  <h1 class="dlg" style="margin-bottom:16px;">What we<br>build for you<span class="dot-blue">.</span></h1>
+  <p class="body-lg">From MVPs to enterprise systems — engineered with precision, built to last.</p></div>
+</div><div class="svc-detail"><div class="svc-row rv"><div class="svc-txt">
+      <div><div class="eyebrow">01 — Web</div><h2 class="dmd" style="margin-bottom:14px;">Web Platforms &amp; Applications</h2>
+      <p class="body-md">High-performance web applications for your workflow — internal tools, portals, SaaS products. Fast, scalable, no shortcuts.</p>
+      <div class="svc-bullets"><div class="svc-bullet">React / Next.js frontends</div><div class="svc-bullet">REST &amp; GraphQL APIs</div><div class="svc-bullet">Admin dashboards &amp; portals</div><div class="svc-bullet">PWA &amp; mobile-optimised builds</div></div></div>
+      <button class="btn btn-ghost" style="margin-top:28px;width:fit-content;" onclick="go('contact')">Discuss Your Project →</button>
+    </div><div class="svc-img-panel cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(135deg,#080b16 0%,#0b0d1c 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:22%;left:39%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.20) 28%,rgba(96,165,250,0.12) 55%,transparent 85%);filter:blur(34px);"></div>
+  <div class="s-bloom" style="width:62%;height:62%;top:18%;left:24%;background:radial-gradient(circle,rgba(37,99,235,0.16) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="svc-row rv" style="direction:rtl;"><div style="direction:ltr;"><div class="svc-txt">
+      <div><div class="eyebrow">02 — AI</div><h2 class="dmd" style="margin-bottom:14px;">AI Integration &amp; Intelligence</h2>
+      <p class="body-md">We integrate AI meaningfully — LLMs, computer vision, custom ML pipelines wired into your systems. A genuine operational upgrade.</p>
+      <div class="svc-bullets"><div class="svc-bullet">LLM workflows (OpenAI, Mistral, Llama)</div><div class="svc-bullet">Document parsing &amp; classification</div><div class="svc-bullet">Custom RAG pipelines &amp; fine-tuning</div><div class="svc-bullet">AI-powered chatbots &amp; assistants</div></div></div>
+      <button class="btn btn-ghost" style="margin-top:28px;width:fit-content;" onclick="go('contact')">Discuss Your Project →</button>
+    </div></div><div class="svc-img-panel cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(140deg,#07091a 0%,#0c0f22 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:24%;left:8%;opacity:.5;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.12) 32%,transparent 80%);filter:blur(36px);"></div>
+  <div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="svc-row rv"><div class="svc-txt">
+      <div><div class="eyebrow">03 — Automation</div><h2 class="dmd" style="margin-bottom:14px;">Process Automation</h2>
+      <p class="body-md">We automate repetitive work consuming your team's time — data pipelines, report generation, multi-system integrations.</p>
+      <div class="svc-bullets"><div class="svc-bullet">Workflow automation (n8n, custom)</div><div class="svc-bullet">ERP &amp; CRM integrations</div><div class="svc-bullet">Automated reporting &amp; notifications</div><div class="svc-bullet">Invoice, document &amp; data pipelines</div></div></div>
+      <button class="btn btn-ghost" style="margin-top:28px;width:fit-content;" onclick="go('contact')">Discuss Your Project →</button>
+    </div><div class="svc-img-panel cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(130deg,#07090f 0%,#0a0c1a 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div>
+  <div class="s-bloom" style="width:58%;height:58%;bottom:-14%;left:-12%;background:radial-gradient(circle,rgba(37,99,235,0.13) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="svc-row rv" style="direction:rtl;"><div style="direction:ltr;"><div class="svc-txt">
+      <div><div class="eyebrow">04 — Infrastructure</div><h2 class="dmd" style="margin-bottom:14px;">Backend &amp; Infrastructure</h2>
+      <p class="body-md">The foundation everything runs on. Cloud infra, databases, auth, security, DevOps — reliable from day one, scalable from day 1,000.</p>
+      <div class="svc-bullets"><div class="svc-bullet">Cloud setup (AWS, GCP, Hetzner)</div><div class="svc-bullet">PostgreSQL / MongoDB / Redis</div><div class="svc-bullet">CI/CD pipelines &amp; Docker / K8s</div><div class="svc-bullet">Auth systems &amp; security hardening</div></div></div>
+      <button class="btn btn-ghost" style="margin-top:28px;width:fit-content;" onclick="go('contact')">Discuss Your Project →</button>
+    </div></div><div class="svc-img-panel cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(135deg,#080b16 0%,#0b0d1c 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 75% 65% at 50% 50%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:22%;left:39%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.20) 28%,rgba(96,165,250,0.12) 55%,transparent 85%);filter:blur(34px);"></div>
+  <div class="s-bloom" style="width:62%;height:62%;top:18%;left:24%;background:radial-gradient(circle,rgba(37,99,235,0.16) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div></div><div class="pricing-sec rv"><div class="pricing-hdr"><div class="eyebrow">Investment</div><h2 class="dmd" style="margin-bottom:14px;">Transparent pricing.</h2><p class="body-md">Premium engineering, honest numbers. No hidden fees. No surprise invoices.</p></div><div class="pricing-grid"><div class="pc  rv">
+      <div class="pc-badge">Starting from</div><div class="pc-type">Web</div><div class="pc-name">Landing Page</div>
+      <div class="pc-price">€1,500<sub>+</sub></div><div class="pc-cycle">Per project</div>
+      <div class="pc-line"></div><div class="pc-feats"><div class="pf"><span class="pf-dot"></span>Custom design &amp; build</div><div class="pf"><span class="pf-dot"></span>Mobile-first responsive</div><div class="pf"><span class="pf-dot"></span>Performance optimised</div><div class="pf"><span class="pf-dot"></span>CMS integration optional</div><div class="pf"><span class="pf-dot off"></span>Custom web application</div><div class="pf"><span class="pf-dot off"></span>AI or automation features</div></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="go('contact')">Enquire</button>
+    </div><div class="pc  rv">
+      <div class="pc-badge">Starting from</div><div class="pc-type">Web</div><div class="pc-name">Business Website</div>
+      <div class="pc-price">€3,000<sub>+</sub></div><div class="pc-cycle">Per project</div>
+      <div class="pc-line"></div><div class="pc-feats"><div class="pf"><span class="pf-dot"></span>Multi-page architecture</div><div class="pf"><span class="pf-dot"></span>Custom design system</div><div class="pf"><span class="pf-dot"></span>CMS &amp; blog integration</div><div class="pf"><span class="pf-dot"></span>SEO foundation</div><div class="pf"><span class="pf-dot"></span>Contact &amp; lead capture</div><div class="pf"><span class="pf-dot off"></span>Custom web application</div></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="go('contact')">Enquire</button>
+    </div><div class="pc feat rv">
+      <div class="pc-badge">Most Requested</div><div class="pc-type">Web Application</div><div class="pc-name">Custom Web App</div>
+      <div class="pc-price">€6,000<sub>+</sub></div><div class="pc-cycle">Per project</div>
+      <div class="pc-line"></div><div class="pc-feats"><div class="pf"><span class="pf-dot"></span>Full-stack application</div><div class="pf"><span class="pf-dot"></span>Auth &amp; role management</div><div class="pf"><span class="pf-dot"></span>Database architecture</div><div class="pf"><span class="pf-dot"></span>Admin panel included</div><div class="pf"><span class="pf-dot"></span>API integrations</div><div class="pf"><span class="pf-dot"></span>Cloud deployment</div></div>
+      <button class="btn btn-solid" style="width:100%;justify-content:center;" onclick="go('contact')">Start Here</button>
+    </div><div class="pc  rv">
+      <div class="pc-badge">Starting from</div><div class="pc-type">Artificial Intelligence</div><div class="pc-name">AI Solution</div>
+      <div class="pc-price">€2,500<sub>+</sub></div><div class="pc-cycle">Per project</div>
+      <div class="pc-line"></div><div class="pc-feats"><div class="pf"><span class="pf-dot"></span>LLM or ML integration</div><div class="pf"><span class="pf-dot"></span>Custom pipeline build</div><div class="pf"><span class="pf-dot"></span>API or UI delivery</div><div class="pf"><span class="pf-dot"></span>RAG or fine-tuning</div><div class="pf"><span class="pf-dot off"></span>Full web application</div><div class="pf"><span class="pf-dot off"></span>Ongoing model training</div></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="go('contact')">Enquire</button>
+    </div><div class="pc  rv">
+      <div class="pc-badge">Starting from</div><div class="pc-type">Automation</div><div class="pc-name">Automation System</div>
+      <div class="pc-price">€2,000<sub>+</sub></div><div class="pc-cycle">Per project</div>
+      <div class="pc-line"></div><div class="pc-feats"><div class="pf"><span class="pf-dot"></span>Workflow automation</div><div class="pf"><span class="pf-dot"></span>System integrations</div><div class="pf"><span class="pf-dot"></span>Error handling &amp; logs</div><div class="pf"><span class="pf-dot"></span>Documentation included</div><div class="pf"><span class="pf-dot off"></span>Custom web app</div><div class="pf"><span class="pf-dot off"></span>AI components</div></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="go('contact')">Enquire</button>
+    </div><div class="pc  rv">
+      <div class="pc-badge">Monthly</div><div class="pc-type">Ongoing Partnership</div><div class="pc-name">Retainer</div>
+      <div class="pc-price">€1,500<sub>/mo</sub></div><div class="pc-cycle">Cancel anytime</div>
+      <div class="pc-line"></div><div class="pc-feats"><div class="pf"><span class="pf-dot"></span>20h development / month</div><div class="pf"><span class="pf-dot"></span>Bug fixes &amp; updates</div><div class="pf"><span class="pf-dot"></span>Feature development</div><div class="pf"><span class="pf-dot"></span>Priority response</div><div class="pf"><span class="pf-dot"></span>Monthly progress report</div><div class="pf"><span class="pf-dot"></span>Dedicated contact</div></div>
+      <button class="btn btn-ghost" style="width:100%;justify-content:center;" onclick="go('contact')">Get Started</button>
+    </div></div><div class="pricing-note rv"><div class="pricing-note-icon">✦</div>
+  <div class="pricing-note-text"><strong>Every project is individually scoped and quoted.</strong> The prices above are starting points — actual investment depends on your requirements, integrations, complexity, and timeline. We always provide a transparent fixed-price quote before any work begins. No surprises.</div>
+</div></div><div class="cta-sec rv"><div class="cta-rings"><div class="cr"></div><div class="cr"></div><div class="cr"></div><div class="cr"></div></div><div class="cta-inner">
+  <div class="eyebrow" style="justify-content:center;">Not Sure Where to Start?</div>
+  <h2 class="dlg" style="margin-bottom:16px;">Let's scope it<br>together<span class="dot-blue">.</span></h2>
+  <p class="body-lg" style="max-width:320px;margin:0 auto;">Tell us your idea. We'll help find the right approach and budget.</p>
+  <div class="cta-row"><button class="btn btn-solid" onclick="go('contact')">Get In Touch →</button></div>
+</div></div><footer>
+  <div class="f-top">
+    <div class="f-brand">
+      <div class="f-logo" onclick="go('home')"><svg viewBox="0 0 28 28" fill="none"><path d="M2 26L9.5 2H13.5L17.5 14.5L21.5 2H26L18 26H14L10 14.5L6 26H2Z" fill="white"/><line x1="15" y1="18" x2="18.5" y2="26" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/></svg><span class="f-logo-name">ALIM SYSTEMS</span></div>
+      <p class="f-tagline">Precision engineered in Germany. Built to power businesses worldwide.</p>
+      <div class="de-badge" style="padding:7px 16px;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label" style="font-size:8px;">Made in Germany</span></div>
+    </div>
+    <div><div class="f-col-title">Company</div><div class="f-col-links"><a onclick="go('about')">About Us</a><a onclick="go('work')">Our Work</a><a onclick="go('services')">Services</a><a onclick="go('contact')">Contact</a></div></div>
+    <div><div class="f-col-title">Services</div><div class="f-col-links"><a onclick="go('services')">Web Platforms</a><a onclick="go('services')">AI Integration</a><a onclick="go('services')">Automation</a><a onclick="go('services')">Infrastructure</a></div></div>
+    <div><div class="f-col-title">Contact</div><div class="f-col-links"><a href="mailto:hello@alimsystems.de">hello@alimsystems.de</a><a>Germany · Remote-friendly</a><a>English · Deutsch</a><a onclick="go('contact')">Start a Project →</a></div></div>
+  </div>
+  <div class="f-bot">
+    <span class="f-copy">© 2026 ALIM Systems. All rights reserved.</span>
+    <div class="f-de"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="f-copy">Engineered in Germany</span></div>
+    <div class="f-legal"><a>Imprint</a><a>Privacy Policy</a><a>Terms</a></div>
+  </div>
+</footer></div><div class="page" id="page-work"><div class="page-hero cinematic rv">
+  <div class="scene">
+  <div class="s-base" style="background:linear-gradient(130deg,#07090f 0%,#0a0c1a 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 74% 62% at 70% 40%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div>
+  <div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 62% 100% at 54% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.74);"></div>
+  <div class="ov-vign"></div>
+  <div class="ov-bot" style="height:78%;background:linear-gradient(to top,var(--void) 0%,rgba(6,6,11,0.62) 38%,transparent 100%);"></div>
+  <div class="ov-left" style="width:64%;background:linear-gradient(to right,rgba(6,6,11,0.88) 6%,rgba(6,6,11,0.46) 40%,transparent 100%);"></div>
+  <div class="cin-grain"></div>
+  <div class="ph-content"><div class="ph-eye">Selected Work</div>
+  <h1 class="dlg" style="margin-bottom:16px;">Built with<br>precision<span class="dot-blue">.</span></h1>
+  <p class="body-lg">Real projects. Honest results. No placeholder mockups.</p></div>
+</div>
+<div class="work-intro rv">
+  <div><div class="eyebrow">Our Portfolio</div><h2 class="dlg">A few things<br>we've shipped.</h2></div>
+  <p class="body-md">Every project represents a real business problem solved. Challenge, solution, measurable outcome.</p>
+</div><div class="cs rv"><div class="cs-txt">
+      <div><div class="eyebrow">01 — Web Platform · 2024</div>
+      <div class="cs-result">↑ 60% reduction in coordination overhead</div>
+      <h2 class="dmd" style="margin-bottom:16px;">Logistics Operations Dashboard</h2>
+      <p class="body-md">A mid-sized logistics company running their entire operation through WhatsApp groups and spreadsheets. We built a full internal platform with real-time shipment tracking, driver assignment, route management, and automated client reporting — role-based and mobile-ready.</p>
+      <p class="body-md" style="margin-top:12px;">The result: full operational visibility, no more manual status updates, and a 60% drop in coordination overhead within the first month.</p></div>
+      <div class="cs-tech"><span class="cs-pill">React</span><span class="cs-pill">Node.js</span><span class="cs-pill">PostgreSQL</span><span class="cs-pill">WebSockets</span><span class="cs-pill">Vercel</span></div>
+    </div><div class="cs-vis cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(135deg,#080b16 0%,#0b0d1c 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 80% 68% at 52% 50%,black,transparent 72%);"></div>
+  <div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div>
+  <div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 60% 100% at 52% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="cs flip rv"><div class="cs-txt">
+      <div><div class="eyebrow">02 — AI Tool · 2024</div>
+      <div class="cs-result">↓ Review time from 4h to 12 minutes</div>
+      <h2 class="dmd" style="margin-bottom:16px;">Document Intelligence Tool</h2>
+      <p class="body-md">A legal services firm needed to extract key clauses, obligations, and dates from hundreds of contracts monthly. We built an AI-powered document parser using GPT-4 with structured output — wrapped in a clean review interface so their team validates results in seconds.</p>
+      <p class="body-md" style="margin-top:12px;">Handles German and English contracts, flags ambiguous clauses, and exports structured data directly into their case management system.</p></div>
+      <div class="cs-tech"><span class="cs-pill">Python</span><span class="cs-pill">OpenAI API</span><span class="cs-pill">FastAPI</span><span class="cs-pill">React</span><span class="cs-pill">PostgreSQL</span></div>
+    </div><div class="cs-vis cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(140deg,#07091a 0%,#0c0f22 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 80% 68% at 52% 50%,black,transparent 72%);"></div>
+  <div class="s-shaft" style="width:24%;left:8%;opacity:.5;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.12) 32%,transparent 80%);filter:blur(36px);"></div>
+  <div class="s-bloom" style="width:62%;height:62%;top:18%;left:24%;background:radial-gradient(circle,rgba(37,99,235,0.16) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 60% 100% at 52% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="cs rv"><div class="cs-txt">
+      <div><div class="eyebrow">03 — Automation · 2023</div>
+      <div class="cs-result">↓ 400+ manual entries eliminated / month</div>
+      <h2 class="dmd" style="margin-bottom:16px;">Invoice Processing Pipeline</h2>
+      <p class="body-md">An e-commerce brand manually entering every incoming invoice into their ERP — slow and error-prone. We automated the full flow: email ingestion → OCR → data extraction → validation → ERP sync, with human review for edge cases only.</p>
+      <p class="body-md" style="margin-top:12px;">The system handles 400+ invoices per month with processing errors reduced to near zero.</p></div>
+      <div class="cs-tech"><span class="cs-pill">Python</span><span class="cs-pill">OCR</span><span class="cs-pill">n8n</span><span class="cs-pill">REST API</span><span class="cs-pill">ERP Integration</span></div>
+    </div><div class="cs-vis cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(130deg,#07090f 0%,#0a0c1a 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 80% 68% at 52% 50%,black,transparent 72%);"></div>
+  <div class="s-shaft" style="width:22%;left:39%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.20) 28%,rgba(96,165,250,0.12) 55%,transparent 85%);filter:blur(34px);"></div>
+  <div class="s-bloom" style="width:58%;height:58%;bottom:-14%;left:-12%;background:radial-gradient(circle,rgba(37,99,235,0.13) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 60% 100% at 52% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="cs flip rv"><div class="cs-txt">
+      <div><div class="eyebrow">04 — Web App · 2023</div>
+      <div class="cs-result">→ 100% of bookings moved online</div>
+      <h2 class="dmd" style="margin-bottom:16px;">Self-Service Booking Platform</h2>
+      <p class="body-md">A service business processing all bookings over the phone — unscalable as they grew. We built a fully self-service platform with Google Calendar sync, automated SMS and email reminders, Stripe payments, and a simple admin panel for their team.</p>
+      <p class="body-md" style="margin-top:12px;">Within two weeks of launch, zero phone bookings needed. Their team recovered hours every week.</p></div>
+      <div class="cs-tech"><span class="cs-pill">Next.js</span><span class="cs-pill">Prisma</span><span class="cs-pill">Stripe</span><span class="cs-pill">Twilio</span><span class="cs-pill">Google Calendar API</span></div>
+    </div><div class="cs-vis cinematic">
+  <div class="scene"><div class="s-base" style="background:linear-gradient(135deg,#080b16 0%,#0b0d1c 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 80% 68% at 52% 50%,black,transparent 72%);"></div>
+  <div class="s-shaft" style="width:34%;left:56%;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.16) 28%,rgba(96,165,250,0.10) 55%,transparent 85%);filter:blur(42px);"></div>
+  <div class="s-bloom" style="width:68%;height:68%;top:-14%;right:-14%;background:radial-gradient(circle,rgba(37,99,235,0.17) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 60% 100% at 52% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.65);"></div>
+  <div class="ov-vign"></div>
+  <div class="cin-grain"></div>
+</div></div><div class="cta-sec rv"><div class="cta-rings"><div class="cr"></div><div class="cr"></div><div class="cr"></div><div class="cr"></div></div><div class="cta-inner">
+  <div class="eyebrow" style="justify-content:center;">Want To Be Next?</div>
+  <h2 class="dlg" style="margin-bottom:16px;">Let's build<br>your project<span class="dot-blue">.</span></h2>
+  <div class="cta-row"><button class="btn btn-solid" onclick="go('contact')">Start a Project →</button></div>
+</div></div><footer>
+  <div class="f-top">
+    <div class="f-brand">
+      <div class="f-logo" onclick="go('home')"><svg viewBox="0 0 28 28" fill="none"><path d="M2 26L9.5 2H13.5L17.5 14.5L21.5 2H26L18 26H14L10 14.5L6 26H2Z" fill="white"/><line x1="15" y1="18" x2="18.5" y2="26" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/></svg><span class="f-logo-name">ALIM SYSTEMS</span></div>
+      <p class="f-tagline">Precision engineered in Germany. Built to power businesses worldwide.</p>
+      <div class="de-badge" style="padding:7px 16px;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label" style="font-size:8px;">Made in Germany</span></div>
+    </div>
+    <div><div class="f-col-title">Company</div><div class="f-col-links"><a onclick="go('about')">About Us</a><a onclick="go('work')">Our Work</a><a onclick="go('services')">Services</a><a onclick="go('contact')">Contact</a></div></div>
+    <div><div class="f-col-title">Services</div><div class="f-col-links"><a onclick="go('services')">Web Platforms</a><a onclick="go('services')">AI Integration</a><a onclick="go('services')">Automation</a><a onclick="go('services')">Infrastructure</a></div></div>
+    <div><div class="f-col-title">Contact</div><div class="f-col-links"><a href="mailto:hello@alimsystems.de">hello@alimsystems.de</a><a>Germany · Remote-friendly</a><a>English · Deutsch</a><a onclick="go('contact')">Start a Project →</a></div></div>
+  </div>
+  <div class="f-bot">
+    <span class="f-copy">© 2026 ALIM Systems. All rights reserved.</span>
+    <div class="f-de"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="f-copy">Engineered in Germany</span></div>
+    <div class="f-legal"><a>Imprint</a><a>Privacy Policy</a><a>Terms</a></div>
+  </div>
+</footer></div><div class="page" id="page-about"><div class="page-hero cinematic rv">
+  <div class="scene">
+  <div class="s-base" style="background:linear-gradient(140deg,#070810 0%,#0c0e1e 46%,#060709 100%);"></div>
+  <div class="s-grid" style="mask-image:radial-gradient(ellipse 74% 62% at 70% 40%,black,transparent 70%);"></div>
+  <div class="s-shaft" style="width:24%;left:8%;opacity:.5;background:linear-gradient(180deg,transparent,rgba(59,130,246,0.12) 32%,transparent 80%);filter:blur(36px);"></div>
+  <div class="s-bloom" style="width:62%;height:62%;top:18%;left:24%;background:radial-gradient(circle,rgba(37,99,235,0.16) 0%,transparent 70%);animation:bloomP 9s ease-in-out infinite;"></div>
+  <div class="s-floor" style="background:radial-gradient(ellipse 62% 100% at 54% 100%,rgba(37,99,235,0.09),transparent 65%);"></div>
+  <div class="s-dots"></div></div>
+  <div class="ov-grade" style="background:rgba(6,6,11,0.74);"></div>
+  <div class="ov-vign"></div>
+  <div class="ov-bot" style="height:78%;background:linear-gradient(to top,var(--void) 0%,rgba(6,6,11,0.62) 38%,transparent 100%);"></div>
+  <div class="ov-left" style="width:64%;background:linear-gradient(to right,rgba(6,6,11,0.88) 6%,rgba(6,6,11,0.46) 40%,transparent 100%);"></div>
+  <div class="cin-grain"></div>
+  <div class="ph-content"><div class="ph-eye">About ALIM Systems</div>
+  <h1 class="dlg" style="margin-bottom:16px;">Engineering<br>without<br>compromise<span class="dot-blue">.</span></h1>
+  <p class="body-lg">A small, focused studio. Precise execution. Long-term thinking.</p></div>
+</div><div class="about-grid">
+  <div class="about-left rv">
+    <div class="eyebrow">Our Identity</div>
+    <h2 class="dlg" style="margin-bottom:16px;">Who we are.</h2>
+    <p class="body-md">ALIM Systems is a digital engineering studio founded in Germany. A lean team of developers and system architects — passionate about building things that actually work and last.</p>
+    <svg class="brand-svg" viewBox="0 0 300 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M2 92L26 8H36L46 50L56 8H66L42 92H32L20 48L8 92H2Z" fill="white"/>
+  <line x1="34" y1="62" x2="43" y2="92" stroke="#3b82f6" stroke-width="6" stroke-linecap="round"/>
+  <path d="M78 8H93V78H130V92H78V8Z" fill="white"/>
+  <path d="M142 8H157V92H142V8Z" fill="white"/>
+  <path d="M170 8H184L204 60L224 8H238V92H223V36L204 82H198L178 36V92H170V8Z" fill="white"/>
+  <text x="78" y="114" font-family="Inter,sans-serif" font-weight="600" font-size="14" letter-spacing="11" fill="#3b82f6">SYSTEMS</text>
+</svg>
+    <div class="de-badge" style="margin-bottom:32px;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label">Engineered in Germany</span></div>
+    <div class="vals">
+      <div class="vi"><span class="vi-name">Precision</span><span class="vi-arr">→</span></div>
+      <div class="vi"><span class="vi-name">Innovation</span><span class="vi-arr">→</span></div>
+      <div class="vi"><span class="vi-name">Reliability</span><span class="vi-arr">→</span></div>
+      <div class="vi"><span class="vi-name">Performance</span><span class="vi-arr">→</span></div>
+    </div>
+  </div>
+  <div class="about-right rv d2">
+    <div class="quote-box">
+      <p class="quote-text">"Building digital systems that move business forward — with the precision Germany is known for."</p>
+      <div class="quote-de"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label">Engineered in Germany</span></div>
+    </div>
+    <div class="mini-stats">
+      <div class="ms"><div class="ms-n">12<sup>+</sup></div><div class="ms-l">Projects</div></div>
+      <div class="ms"><div class="ms-n">3<sup>+</sup></div><div class="ms-l">Years</div></div>
+      <div class="ms"><div class="ms-n">8<sup>+</sup></div><div class="ms-l">Industries</div></div>
+    </div>
+    <div>
+      <div class="eyebrow">Our Story</div>
+      <p class="body-md" style="margin-bottom:14px;">We started ALIM Systems because we were frustrated by agencies that overpromise and underdeliver. Too many businesses receive templated solutions dressed up as custom work.</p>
+      <p class="body-md" style="margin-bottom:24px;">We don't chase trends. We apply German engineering values to digital problems — thoroughness, precision, and deep respect for the systems we build and the people who depend on them.</p>
+      <button class="btn btn-solid" onclick="go('contact')">Work With Us →</button>
+    </div>
+  </div>
+</div><div class="german-strip">
+  <div class="gs rv"><div class="gs-label">Founded</div><div class="gs-n">20<span>19</span></div><div class="gs-body">Built from the ground up in Germany, with a clear mission from day one.</div></div>
+  <div class="gs rv d1"><div class="gs-label">Projects Shipped</div><div class="gs-n">12<span>+</span></div><div class="gs-body">Across logistics, legal, e-commerce, and professional services.</div></div>
+  <div class="gs rv d2"><div class="gs-label">Our Approach</div><div class="gs-n" style="font-size:36px;line-height:1.2;letter-spacing:-.02em;">Built to<br><span>Last.</span></div><div class="gs-body">We build for scalability and longevity, not short-term demos.</div></div>
+</div><div class="cta-sec rv"><div class="cta-rings"><div class="cr"></div><div class="cr"></div><div class="cr"></div><div class="cr"></div></div><div class="cta-inner">
+  <div class="eyebrow" style="justify-content:center;">Let's Work Together</div>
+  <h2 class="dlg" style="margin-bottom:16px;">Ready to build<br>something serious<span class="dot-blue">?</span></h2>
+  <div class="cta-row"><button class="btn btn-solid" onclick="go('contact')">Get In Touch →</button></div>
+</div></div><footer>
+  <div class="f-top">
+    <div class="f-brand">
+      <div class="f-logo" onclick="go('home')"><svg viewBox="0 0 28 28" fill="none"><path d="M2 26L9.5 2H13.5L17.5 14.5L21.5 2H26L18 26H14L10 14.5L6 26H2Z" fill="white"/><line x1="15" y1="18" x2="18.5" y2="26" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/></svg><span class="f-logo-name">ALIM SYSTEMS</span></div>
+      <p class="f-tagline">Precision engineered in Germany. Built to power businesses worldwide.</p>
+      <div class="de-badge" style="padding:7px 16px;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label" style="font-size:8px;">Made in Germany</span></div>
+    </div>
+    <div><div class="f-col-title">Company</div><div class="f-col-links"><a onclick="go('about')">About Us</a><a onclick="go('work')">Our Work</a><a onclick="go('services')">Services</a><a onclick="go('contact')">Contact</a></div></div>
+    <div><div class="f-col-title">Services</div><div class="f-col-links"><a onclick="go('services')">Web Platforms</a><a onclick="go('services')">AI Integration</a><a onclick="go('services')">Automation</a><a onclick="go('services')">Infrastructure</a></div></div>
+    <div><div class="f-col-title">Contact</div><div class="f-col-links"><a href="mailto:hello@alimsystems.de">hello@alimsystems.de</a><a>Germany · Remote-friendly</a><a>English · Deutsch</a><a onclick="go('contact')">Start a Project →</a></div></div>
+  </div>
+  <div class="f-bot">
+    <span class="f-copy">© 2026 ALIM Systems. All rights reserved.</span>
+    <div class="f-de"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="f-copy">Engineered in Germany</span></div>
+    <div class="f-legal"><a>Imprint</a><a>Privacy Policy</a><a>Terms</a></div>
+  </div>
+</footer></div><div class="page" id="page-contact">
+<div class="contact-layout">
+  <div class="cl rv">
+    <div>
+      <div class="eyebrow">Get In Touch</div>
+      <h1 class="dmd" style="margin-bottom:16px;">Let's talk about<br>your project<span class="dot-blue">.</span></h1>
+      <p class="body-md">Whether you have a fully scoped idea or just a problem to solve — we'll help find the right path forward.</p>
+      <div class="contact-info">
+        <div class="ci"><div class="ci-l">Email</div><div class="ci-v"><a href="mailto:hello@alimsystems.de">hello@alimsystems.de</a></div></div>
+        <div class="ci"><div class="ci-l">Response Time</div><div class="ci-v">Within 24 hours</div></div>
+        <div class="ci"><div class="ci-l">Project Start</div><div class="ci-v">Typically within 2 weeks</div></div>
+        <div class="ci"><div class="ci-l">Languages</div><div class="ci-v">English · Deutsch</div></div>
+      </div>
+    </div>
+    <div class="contact-base">
+      <div class="cbase-card">
+        <div class="label" style="margin-bottom:9px;">Based In</div>
+        <div class="body-md" style="margin-bottom:12px;font-size:13px;">Germany · Remote-friendly worldwide</div>
+        <div class="de-badge" style="width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label">Engineered in Germany</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cr-wrap rv d2">
+    <div id="form-wrap">
+      <h2 class="dmd" style="margin-bottom:8px;">Send us a message.</h2>
+      <p class="body-md" style="margin-bottom:32px;font-size:13px;">We'll review your project and reply within 24 hours.</p>
+      <div class="form-row2">
+        <div class="fg"><label class="fl">First Name</label><input class="fi" type="text" placeholder="Max" id="f1"></div>
+        <div class="fg"><label class="fl">Last Name</label><input class="fi" type="text" placeholder="Müller" id="f2"></div>
+      </div>
+      <div class="fg"><label class="fl">Email Address</label><input class="fi" type="email" placeholder="max@company.de" id="f3"></div>
+      <div class="fg"><label class="fl">Company (optional)</label><input class="fi" type="text" placeholder="Your company" id="f4"></div>
+      <div class="fg">
+        <label class="fl" style="margin-bottom:11px;">What are you looking for?</label>
+        <div class="svc-pills2">
+          <span class="sp2" onclick="tp(this)">Web Platform</span>
+          <span class="sp2" onclick="tp(this)">Business Website</span>
+          <span class="sp2" onclick="tp(this)">AI Integration</span>
+          <span class="sp2" onclick="tp(this)">Automation</span>
+          <span class="sp2" onclick="tp(this)">MVP Build</span>
+          <span class="sp2" onclick="tp(this)">Retainer / Support</span>
+          <span class="sp2" onclick="tp(this)">Not sure yet</span>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Budget Range</label>
+        <select class="fs" id="f5">
+          <option value="" disabled selected>Select a range</option>
+          <option>Under €2,000</option><option>€2,000 – €5,000</option>
+          <option>€5,000 – €10,000</option><option>€10,000 – €25,000</option>
+          <option>€25,000+</option><option>Not sure yet</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Your Project</label><textarea class="ft" placeholder="Tell us about your project — what are you building, what problem does it solve, what's your timeline?" id="f6"></textarea></div>
+      <button class="btn btn-solid form-submit" onclick="submitForm()">Send Message →</button>
+    </div>
+    <div class="success-box" id="success">
+      <div class="success-icon">✦</div>
+      <div class="success-h">Message Received.</div>
+      <p class="success-p">Thanks for reaching out. We'll review your project and reply within 24 hours at the email you provided.</p>
+    </div>
+  </div>
+</div><footer>
+  <div class="f-top">
+    <div class="f-brand">
+      <div class="f-logo" onclick="go('home')"><svg viewBox="0 0 28 28" fill="none"><path d="M2 26L9.5 2H13.5L17.5 14.5L21.5 2H26L18 26H14L10 14.5L6 26H2Z" fill="white"/><line x1="15" y1="18" x2="18.5" y2="26" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round"/></svg><span class="f-logo-name">ALIM SYSTEMS</span></div>
+      <p class="f-tagline">Precision engineered in Germany. Built to power businesses worldwide.</p>
+      <div class="de-badge" style="padding:7px 16px;width:fit-content;"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="de-label" style="font-size:8px;">Made in Germany</span></div>
+    </div>
+    <div><div class="f-col-title">Company</div><div class="f-col-links"><a onclick="go('about')">About Us</a><a onclick="go('work')">Our Work</a><a onclick="go('services')">Services</a><a onclick="go('contact')">Contact</a></div></div>
+    <div><div class="f-col-title">Services</div><div class="f-col-links"><a onclick="go('services')">Web Platforms</a><a onclick="go('services')">AI Integration</a><a onclick="go('services')">Automation</a><a onclick="go('services')">Infrastructure</a></div></div>
+    <div><div class="f-col-title">Contact</div><div class="f-col-links"><a href="mailto:hello@alimsystems.de">hello@alimsystems.de</a><a>Germany · Remote-friendly</a><a>English · Deutsch</a><a onclick="go('contact')">Start a Project →</a></div></div>
+  </div>
+  <div class="f-bot">
+    <span class="f-copy">© 2026 ALIM Systems. All rights reserved.</span>
+    <div class="f-de"><div class="de-flag"><span class="df1"></span><span class="df2"></span><span class="df3"></span></div><span class="f-copy">Engineered in Germany</span></div>
+    <div class="f-legal"><a>Imprint</a><a>Privacy Policy</a><a>Terms</a></div>
+  </div>
+</footer></div><script>
+const PAGES=['home','services','work','about','contact'];
+
+function go(id){
+  PAGES.forEach(p=>{
+    document.getElementById('page-'+p).classList.toggle('act',p===id);
+    const nl=document.getElementById('nl-'+p),mm=document.getElementById('mm-'+p);
+    if(nl)nl.classList.toggle('act',p===id);
+    if(mm)mm.classList.toggle('act',p===id);
+  });
+  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('mob').classList.remove('open');
+  setTimeout(()=>{
+    document.querySelectorAll('#page-'+id+' .rv:not(.in)').forEach(el=>rvObs.observe(el));
+    document.querySelectorAll('#page-'+id+' .cnt').forEach(el=>cntObs.observe(el));
+  },40);
+}
+
+document.querySelectorAll('[onclick^="go"]').forEach(el=>{
+  if(el.tagName==='A')el.addEventListener('click',e=>e.preventDefault());
+});
+
+let mobOpen=false;
+function toggleMob(){
+  mobOpen=!mobOpen;
+  document.getElementById('mob').classList.toggle('open',mobOpen);
+}
+
+/* Typewriter */
+(function(){
+  const el=document.getElementById('tw');
+  if(!el)return;
+  const words=['Building','Engineering','Designing','Shipping','Building'];
+  let wi=0,ci=0,del=false,pause=false;
+  function tick(){
+    if(pause){pause=false;setTimeout(tick,1600);return;}
+    const w=words[wi];
+    if(!del){el.textContent=w.slice(0,++ci);if(ci===w.length){pause=true;del=true;}setTimeout(tick,92);}
+    else{el.textContent=w.slice(0,--ci);if(ci===0){del=false;wi=(wi+1)%words.length;}setTimeout(tick,44);}
+  }
+  setTimeout(tick,700);
+})();
+
+/* Reveal on scroll */
+const rvObs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){e.target.classList.add('in');rvObs.unobserve(e.target);}
+}),{threshold:0.06,rootMargin:'0px 0px -18px 0px'});
+document.querySelectorAll('#page-home .rv').forEach(el=>rvObs.observe(el));
+
+/* Counters */
+function countUp(el,to,dur=1400){
+  let s=null;
+  requestAnimationFrame(function f(ts){
+    if(!s)s=ts;
+    const p=Math.min((ts-s)/dur,1),ease=1-Math.pow(1-p,3);
+    el.textContent=Math.round(ease*to);
+    if(p<1)requestAnimationFrame(f);
+  });
+}
+const cntObs=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){countUp(e.target,+e.target.dataset.to);cntObs.unobserve(e.target);}
+}),{threshold:.5});
+document.querySelectorAll('#page-home .cnt').forEach(el=>cntObs.observe(el));
+
+/* Parallax on scenes */
+let ticking=false;
+window.addEventListener('scroll',()=>{
+  if(ticking)return;ticking=true;
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.s-shaft,.s-bloom').forEach(el=>{
+      const sec=el.closest('.cinematic');if(!sec)return;
+      const r=sec.getBoundingClientRect();
+      if(r.bottom<0||r.top>innerHeight){ticking=false;return;}
+      const p=(innerHeight-r.top)/(innerHeight+r.height);
+      const off=(p-.5)*32;
+      if(el.classList.contains('s-shaft')){
+        const sk=el.style.transform.includes('skewX')?'skewX(-12deg) ':'';
+        el.style.transform=sk+'translateY('+off+'px)';
+      } else {
+        el.style.transform='translateY('+(off*.55)+'px)';
+      }
+    });
+    ticking=false;
+  });
+},{passive:true});
+
+/* Contact form */
+function tp(el){el.classList.toggle('on');}
+function submitForm(){
+  const first=document.getElementById('f1').value.trim();
+  const email=document.getElementById('f3').value.trim();
+  const msg=document.getElementById('f6').value.trim();
+  if(!first||!email||!msg){alert('Please fill in your name, email, and project description.');return;}
+  document.getElementById('form-wrap').style.display='none';
+  document.getElementById('success').classList.add('show');
+}
+</script>
+<style>@keyframes bloomP{0%,100%{opacity:.72;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}</style>
+</body></html>
